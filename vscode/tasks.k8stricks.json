@@ -1,0 +1,91 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "k8s Port Forward",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-c",
+        "kubectl port-forward --namespace ${input:namespace} $(kubectl get pods --namespace ${input:namespace} --no-headers | awk \"/${input:podPattern}/ {print \\$1; exit}\") 5678:5678"
+      ],
+      "problemMatcher": [],
+      "isBackground": true,
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "dedicated",
+        "showReuseMessage": false,
+        "clear": false
+      }
+    },
+    {
+      "label": "Stream k8s logs with color",
+      "type": "shell",
+      "command": "${workspaceFolder}/.vscode/k8s_stream_logs.sh",
+      "args": [
+        "${input:namespace}",
+        "${input:podPattern}"
+      ],
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "shared",
+        "showReuseMessage": false,
+        "clear": false
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Run k8s pod terminal",
+      "type": "shell",
+      "command": "${workspaceFolder}/.vscode/k8s_pod_terminal.sh",
+      "args": [
+        "${input:namespace}",
+        "${input:podPattern}"
+      ],
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "shared",
+        "showReuseMessage": false,
+        "clear": false
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Find GPU pods",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-c",
+        "kubectl get pods -n ${input:namespace} -o yaml | grep -B5 -A5 'nvidia.com/gpu'"
+      ],
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "shared",
+        "showReuseMessage": false,
+        "clear": false
+      },
+      "problemMatcher": []
+    }
+
+  ],
+  "inputs": [
+    {
+      "id": "namespace",
+      "type": "promptString",
+      "description": "Enter the Kubernetes namespace"
+    },
+    {
+      "id": "podPattern",
+      "type": "promptString",
+      "description": "Enter pod name pattern",
+    }
+  ]
+}
